@@ -1,1 +1,2031 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Cinema Edu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #090f1a;
+  --paper: #f0f4fa;
+  --cream: #e4ecf7;
+  --warm: #93b4d8;
+  --copper: #2d6fbb;
+  --rust: #1a3f72;
+  --charcoal: #1a2a42;
+  --text: #0f1e33;
+  --muted: #5a718a;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: 'Cormorant Garamond', serif;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--copper);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+  mix-blend-mode: multiply;
+}
+.cursor-ring {
+  position: fixed;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--copper);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.18s ease;
+  opacity: 0.6;
+}
+body:has(a:hover) .cursor, body:has(button:hover) .cursor { width: 18px; height: 18px; }
+body:has(a:hover) .cursor-ring, body:has(button:hover) .cursor-ring { width: 54px; height: 54px; opacity: 0.3; }
+
+/* ── NOISE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.5;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 1.5rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  mix-blend-mode: multiply;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+/* SVG LOGO — stylized "SL" lettermark */
+.logo-mark {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.logo-wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-main {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 3px;
+  color: var(--ink);
+}
+
+.logo-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: var(--copper);
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0;
+  width: 0; height: 1px;
+  background: var(--copper);
+  transition: width 0.3s;
+}
+
+.nav-links a:hover { color: var(--copper); }
+.nav-links a:hover::after { width: 100%; }
+
+.btn-login {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  cursor: none;
+  transition: background 0.25s, color 0.25s;
+}
+
+.btn-login:hover { background: var(--copper); }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 0 3rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-text {
+  position: absolute;
+  bottom: -0.1em;
+  left: -0.02em;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(14vw, 20vw, 22vw);
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(0,0,0,0.06);
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: -2px;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 5vh;
+  padding-top: 40vh;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: fadeIn 1s ease 0.3s backwards;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--copper);
+}
+
+.hero-headline {
+  font-size: clamp(3.5rem, 7vw, 7rem);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -1px;
+  max-width: 800px;
+  animation: slideUp 1s ease 0.5s backwards;
+}
+ 
+.hero-headline em {
+  font-style: italic;
+  color: var(--copper);
+}
+
+.hero-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  animation: fadeIn 1s ease 0.9s backwards;
+}
+
+.hero-desc {
+  max-width: 320px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+.hero-cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  transition: gap 0.3s;
+}
+
+.hero-cta:hover { gap: 1.5rem; color: var(--copper); }
+
+.cta-arrow {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--charcoal);
+  display: grid;
+  place-items: center;
+  transition: background 0.3s, border-color 0.3s;
+  font-size: 1.1rem;
+}
+
+.hero-cta:hover .cta-arrow { background: var(--copper); border-color: var(--copper); color: white; }
+
+/* ── MARQUEE ── */
+.marquee-band {
+  background: var(--ink);
+  padding: 1.1rem 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  animation: marquee 25s linear infinite;
+  white-space: nowrap;
+}
+
+.marquee-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--warm);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.marquee-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--copper);
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── SECTION COMMONS ── */
+section {
+  padding: 7rem 3rem;
+}
+
+.section-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-tag::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--copper);
+}
+
+.section-tag span { color: var(--muted); margin-left: 0.2rem; }
+
+/* ── ABOUT ── */
+#about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+  background: var(--cream);
+}
+
+.about-left { }
+
+.about-headline {
+  font-size: clamp(2.8rem, 4.5vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 2rem;
+}
+
+.about-headline em { font-style: italic; color: var(--copper); }
+
+.about-body {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+.about-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: 1px;
+}
+
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+.about-image-wrap {
+  position: relative;
+}
+
+.about-image {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  display: block;
+  filter: sepia(15%) contrast(1.05);
+}
+
+.about-image-placeholder {
+  width: 100%;
+  aspect-ratio: 4/5;
+  background: linear-gradient(135deg, #1a3f72 0%, #2d6fbb 40%, #0f2240 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-image-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(0,0,0,0.2) 0%, transparent 50%);
+}
+
+.about-img-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 4px;
+  text-align: center;
+  z-index: 1;
+}
+
+.about-badge {
+  position: absolute;
+  bottom: -1.5rem;
+  right: -1.5rem;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.6;
+  animation: spin 20s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── WORK / PORTFOLIO ── */
+#work { background: var(--paper); }
+
+.work-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 4rem;
+}
+
+.work-headline {
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 300;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.work-headline em { font-style: italic; color: var(--copper); }
+
+.view-all {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s;
+}
+
+.view-all:hover { color: var(--copper); }
+
+/* Portfolio grid */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px;
+  background: var(--charcoal);
+}
+
+.portfolio-grid > * {
+  background: var(--paper);
+}
+
+.proj {
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+}
+
+.proj-img {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  filter: none;
+}
+
+.proj:hover .proj-img { transform: scale(1.06); }
+
+.proj-placeholder {
+  width: 100%;
+  aspect-ratio: 2/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.proj:hover .proj-placeholder { transform: scale(1.06); }
+
+.proj-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(13,13,13,0);
+  transition: background 0.4s;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+}
+
+.proj:hover .proj-overlay { background: rgba(13,13,13,0.72); }
+
+.proj-info {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.4s;
+}
+
+.proj:hover .proj-info { transform: translateY(0); opacity: 1; }
+
+.proj-cat {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--warm);
+  margin-bottom: 0.4rem;
+}
+
+.proj-title {
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--paper);
+  letter-spacing: -0.3px;
+}
+
+.proj-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(0,0,0,0.07);
+}
+
+/* color palettes for placeholders */
+.c1 { background: linear-gradient(135deg, #0d1f3c 0%, #1a4a7a 100%); }
+.c2 { background: linear-gradient(135deg, #0a1628 0%, #1e5096 100%); }
+.c3 { background: linear-gradient(135deg, #0f2240 0%, #2d6fbb 100%); }
+.c4 { background: linear-gradient(135deg, #071020 0%, #163d70 100%); }
+.c5 { background: linear-gradient(135deg, #0a1a35 0%, #1b4d8c 100%); }
+.c6 { background: linear-gradient(135deg, #0d2040 0%, #3a7cc7 100%); }
+.proj-icon { font-size: 3rem; opacity: 0.25; }
+
+/* ── SERVICES ── */
+#services {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+#services .section-tag { color: var(--warm); }
+#services .section-tag::before { background: var(--warm); }
+
+.services-header {
+  margin-bottom: 5rem;
+}
+
+.services-headline {
+  font-size: clamp(2.5rem, 4.5vw, 5rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  max-width: 700px;
+}
+
+.services-headline em { font-style: italic; color: var(--warm); }
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.service-item {
+  padding: 3rem 2.5rem 3rem 0;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.3s;
+  position: relative;
+}
+
+.service-item:last-child { border-right: none; }
+
+.service-item:hover { background: rgba(255,255,255,0.02); }
+
+.service-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  color: var(--copper);
+  margin-bottom: 2rem;
+}
+
+.service-name {
+  font-size: 1.8rem;
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  margin-bottom: 1.5rem;
+}
+
+.service-desc {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: rgba(245,242,236,0.5);
+  font-weight: 300;
+}
+
+.service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 2rem;
+}
+
+.s-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.4);
+}
+
+/* ── FEATURED IMAGE ── */
+.split-feature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 70vh;
+}
+
+.split-img {
+  background: linear-gradient(135deg, #1a3f72 0%, #0a1628 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.split-img-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Beautiful geometric illustration */
+.geo-art {
+  position: relative;
+  width: 280px; height: 280px;
+}
+
+.geo-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(147,180,216,0.3);
+  animation: geo-pulse 4s ease-in-out infinite;
+}
+
+.geo-ring:nth-child(1) { inset: 0; animation-delay: 0s; }
+.geo-ring:nth-child(2) { inset: 15%; animation-delay: 0.5s; }
+.geo-ring:nth-child(3) { inset: 30%; animation-delay: 1s; }
+.geo-ring:nth-child(4) { inset: 45%; animation-delay: 1.5s; background: rgba(45,111,187,0.1); }
+
+@keyframes geo-pulse {
+  0%,100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.02); }
+}
+
+.geo-cross {
+  position: absolute;
+  inset: 40%;
+  background: var(--copper);
+  clip-path: polygon(40% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0% 60%, 0% 40%, 40% 40%);
+  opacity: 0.6;
+}
+
+.split-text {
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5rem 4rem;
+}
+
+.split-text .section-tag { margin-bottom: 2rem; }
+
+.split-headline {
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: 2rem;
+}
+
+.split-headline em { font-style: italic; color: var(--copper); }
+
+.split-body {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 3rem;
+  max-width: 360px;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 0.9rem 1.8rem;
+  transition: all 0.25s;
+  cursor: none;
+}
+
+.btn-outline:hover { background: var(--ink); color: var(--paper); }
+
+/* ── CLIENTS ── */
+#clients {
+  background: var(--paper);
+  text-align: center;
+  padding: 5rem 3rem;
+}
+
+.clients-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 3rem;
+}
+
+.clients-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  flex-wrap: wrap;
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.client-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 3px;
+  color: var(--ink);
+}
+
+/* ── TESTIMONIAL ── */
+.testimonial-section {
+  background: var(--cream);
+  padding: 7rem 3rem;
+  text-align: center;
+}
+
+.testimonial-quote {
+  font-size: clamp(1.5rem, 3vw, 2.8rem);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.4;
+  max-width: 850px;
+  margin: 0 auto 2.5rem;
+  letter-spacing: -0.3px;
+}
+
+.testimonial-attr {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.testimonial-attr strong { color: var(--copper); }
+
+/* ── CONTACT ── */
+#contact {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 8rem 3rem;
+  text-align: center;
+}
+
+.contact-headline {
+  font-size: clamp(3rem, 7vw, 8rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -2px;
+  margin-bottom: 1.5rem;
+}
+
+.contact-headline em { font-style: italic; color: var(--copper); }
+
+.contact-sub {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: rgba(240,244,250,0.5);
+  margin-bottom: 3rem;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+
+.contact-links {
+  margin-bottom: 2.5rem;
+}
+
+.contact-email {
+  display: inline-block;
+  font-size: clamp(1rem, 2vw, 1.6rem);
+  font-weight: 300;
+  color: var(--paper);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 0.3rem;
+  transition: color 0.25s, border-color 0.25s;
+}
+
+.contact-email:hover { color: var(--warm); border-color: var(--warm); }
+
+.contact-socials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.contact-social-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240,244,250,0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.contact-social-link:hover { color: var(--warm); }
+
+.contact-social-dot {
+  color: rgba(240,244,250,0.2);
+  font-size: 1rem;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink);
+  color: rgba(240,244,250,0.3);
+  padding: 2.5rem 3rem;
+  border-top: 1px solid rgba(45,111,187,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-copy {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  color: rgba(240,244,250,0.3);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--warm); }
+
+/* ── LOGIN MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,13,13,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  place-items: center;
+}
+
+.modal-overlay.open { display: grid; }
+
+.login-modal {
+  background: rgba(240, 244, 250, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 90%;
+  max-width: 440px;
+  padding: 4rem 3.5rem;
+  position: relative;
+  border-radius: 25px;
+  animation: modalReveal 0.45s cubic-bezier(0.25,0.46,0.45,0.94);
+  z-index: 100;
+}
+
+@keyframes modalReveal {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Corner decorations */
+.login-modal::before, .login-modal::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  border-color: var(--copper);
+  border-style: solid;
+}
+
+.login-modal::before {
+  top: 0.75rem; left: 0.75rem;
+  border-width: 1px 0 0 1px;
+}
+
+.login-modal::after {
+  bottom: 0.75rem; right: 0.75rem;
+  border-width: 0 1px 1px 0;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.25rem; right: 1.25rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--muted);
+  cursor: none;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.modal-close:hover { color: var(--rust); }
+
+.modal-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2.5rem;
+}
+
+.modal-logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  color: var(--ink);
+}
+
+.modal-headline {
+  font-family: 'cormorant garamond', serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  color: var(--ink);
+  animation: fadeIn 0.8s ease-out;
+}
+
+.modal-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.form-field {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+  padding: 0.6rem 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.25s;
+}
+
+.form-input:focus { border-color: var(--copper); }
+
+.form-input::placeholder { color: rgba(122,114,104,0.5); }
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.check-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: none;
+}
+
+.check-wrap input { accent-color: var(--copper); }
+
+.forgot-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover { color: var(--copper); }
+
+.btn-submit {
+  width: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 1.1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: none;
+  transition: background 0.25s;
+  margin-bottom: 1.5rem;
+}
+
+.btn-submit:hover {
+  background: var(--copper);
+  transform: translateY(-2px);
+  box-shadow: 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.modal-divider {
+  text-align: center;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.modal-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+}
+
+.modal-divider span {
+  position: relative;
+  background: var(--cream);
+  padding: 0 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+.register-link {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+.register-link a {
+  color: var(--copper);
+  text-decoration: none;
+  font-style: italic;
+}
+
+/* Login success state */
+.login-success {
+  display: none;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.success-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.success-name {
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: -0.3px;
+  margin-bottom: 0.5rem;
+}
+
+.success-msg {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* Logged in indicator */
+.user-indicator {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  color: var(--copper);
+}
+
+.user-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--copper);
+}
+
+/* ── BLUE ACCENTS ── */
+
+#hero::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45,111,187,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.stat-num { color: var(--copper); }
+.about-stats { border-top: 1px solid rgba(45,111,187,0.25); }
+.about-badge { background: var(--copper); color: #fff; }
+
+.marquee-band { background: var(--rust); }
+.marquee-dot { background: var(--warm); }
+.marquee-item { color: var(--warm); }
+
+.service-item {
+  border-left: 0px solid var(--copper);
+  transition: background 0.3s, border-left-width 0.3s, padding-left 0.3s;
+}
+.service-item:hover {
+  background: rgba(45,111,187,0.08) !important;
+  border-left-width: 3px;
+  padding-left: calc(2.5rem - 3px);
+}
+.service-num { color: var(--warm); }
+.s-tag { border-color: rgba(45,111,187,0.35); color: var(--warm); }
+
+.proj-num { border-top: 1px solid rgba(45,111,187,0.15); }
+.proj:hover .proj-overlay { background: rgba(9,15,26,0.8); box-shadow: inset 0 0 60px rgba(45,111,187,0.18); }
+.proj-cat { color: var(--warm); }
+.proj-play-hint { color: var(--warm); }
+.play-icon { border-color: var(--warm); }
+
+.testimonial-section { border-top: 3px solid var(--copper); }
+.testimonial-quote { color: var(--text); }
+
+.form-input:focus { border-color: var(--copper) !important; box-shadow: 0 0 0 3px rgba(45,111,187,0.12); }
+.btn-submit { background: var(--copper); }
+.btn-submit:hover { background: var(--rust); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── VIDEO MODAL ── */
+.video-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9500;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.video-modal-overlay.open {
+  display: flex;
+}
+
+.video-modal-inner {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+}
+
+.video-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.video-modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--paper);
+  letter-spacing: -0.3px;
+}
+
+.video-modal-cat {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--warm);
+  margin-bottom: 0.3rem;
+}
+
+.video-modal-close {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--paper);
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  cursor: none;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.video-modal-close:hover {
+  background: var(--copper);
+  border-color: var(--copper);
+}
+
+.video-frame-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+}
+
+.video-frame-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Play button hint on proj cards */
+.proj-play-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  color: var(--warm);
+  text-transform: uppercase;
+}
+
+.play-icon {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--warm);
+  display: grid;
+  place-items: center;
+  font-size: 0.6rem;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 1.25rem 1.5rem; }
+  .nav-links { display: none; }
+  #hero { padding: 0 1.5rem 2rem; }
+  #about { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem; }
+  .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+  .services-grid { grid-template-columns: 1fr; }
+  .service-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 2.5rem 0; }
+  .split-feature { grid-template-columns: 1fr; }
+  .split-img { min-height: 300px; }
+  section { padding: 5rem 1.5rem; }
+  #contact { padding: 6rem 1.5rem; }
+  footer { padding: 2rem 1.5rem; }
+  .login-modal { padding: 2.5rem 2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <!-- SVG Logo Mark -->
+    <svg class="logo-mark" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer frame -->
+      <rect x="2" y="2" width="40" height="40" stroke="#090f1a" stroke-width="1"/>
+      <!-- Corner marks -->
+      <line x1="2" y1="2" x2="9" y2="2" stroke="#2d6fbb" stroke-width="1.5"/>
+      <line x1="2" y1="2" x2="2" y2="9" stroke="#2d6fbb" stroke-width="1.5"/>
+      <line x1="42" y1="35" x2="42" y2="42" stroke="#2d6fbb" stroke-width="1.5"/>
+      <line x1="35" y1="42" x2="42" y2="42" stroke="#2d6fbb" stroke-width="1.5"/>
+      <!-- S letterform -->
+      <path d="M10 16 Q10 11 15 11 L22 11 Q27 11 27 16 Q27 21 22 22 L17 22 Q10 23 10 28 Q10 33 17 33 L28 33" 
+            stroke="#090f1a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <!-- L letterform -->
+      <path d="M30 11 L30 33 L38 33" 
+            stroke="#2d6fbb" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="logo-wordmark">
+      <span class="logo-main">SUDUT LAYAR</span>
+      <span class="logo-sub">Creative Studio</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#work">Trailer</a></li>
+    <li><a href="#services">Edukasi</a></li>
+    <li><a href="#contact">Kontak</a></li>
+  </ul>
+
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <div class="user-indicator" id="userIndicator">
+      <span class="user-dot"></span>
+      <span id="userName">—</span>
+    </div>
+    <button class="btn-login" id="loginBtn" onclick="openLogin()">Masuk</button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg-text">SUDUT<br>LAYAR</div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Sudut Layar ·</div>
+    <h1 class="hero-headline">
+      Film sebagai<br>
+      media <em>belajar</em><br>
+      yang  <em>yang bermakna</em>
+    </h1>
+  </div>
+
+  <div class="hero-foot">
+    <p class="hero-desc">
+      The Cinema Edu adalah platform edukasi berbasis film yang menghadirkan trailer, sinopsis, dan nilai pembelajaran dalam satu ruang digital yang terkurasi dan mudah diakses oleh semua kalangan..
+    </p>
+    <a href="#work" class="hero-cta">
+      Lihat trailer
+      <span class="cta-arrow">↓</span>
+    </a>
+  </div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee-band">
+  <div class="marquee-track">
+    <span class="marquee-item">Selisih<span class="marquee-dot"></span></span>
+    <span class="marquee-item">FRI3ND<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Jemput Bahagia<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Dear Nathan<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Titik Balik<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Si Guntur<span class="marquee-dot"></span></span>
+    
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item">Selisih<span class="marquee-dot"></span></span>
+    <span class="marquee-item">FRI3ND<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Jemput Bahagia<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Dear Nathan<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Titik Balik<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Si Guntur<span class="marquee-dot"></span></span>
+
+  </div>
+</div>
+
+<!-- ── WORK ── -->
+<section id="work">
+  <div class="work-header reveal">
+    <div>
+      <div class="section-tag">Karya P5 SMKN 1 Cikarang Selatan <span>/ 2024–2025</span></div>
+      <h2 class="work-headline">
+        Proyek yang<br><em>kami Tampilkan</em>
+      </h2>
+    </div>
+    <a href="#" class="view-all">Semua Proyek →</a>
+  </div>
+
+  <div class="portfolio-grid reveal">
+    <!-- Project 1 -->
+    <div class="proj" onclick="openVideo('drive','1x5VdCek3ITHY2po1hxGpDcf2w0U7Q6Zj','karya 12 tjkt B','Si Guntur')" style="cursor:none;">
+      <img class="proj-img" src="https://drive.google.com/thumbnail?id=1xOoK7DvOsSA89t415je4wq9hDcqXSjTZ&sz=w800" alt="Si Guntur">
+      <div class="proj-overlay">
+        <div class="proj-info">
+          <div class="proj-cat">karya 12 tjkt B</div>
+          <div class="proj-title">Si Guntur</div>
+          <div class="proj-play-hint"><span class="play-icon">▶</span> Tonton Trailer</div>
+        </div>
+      </div>
+      <div class="proj-num">
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">01</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">2024</span>
+      </div>
+    </div>
+
+    <!-- Project 2 -->
+    <div class="proj" onclick="openVideo('drive','1tRojpaKe_i7thqmTP1ezIFQq8ec1EXSC','Karya 12 TP C','Titik Balik')" style="cursor:none;">
+      <img class="proj-img" src="https://drive.google.com/thumbnail?id=1xAn_8V3ysBt-wwAeBC43T3VyUPhF_4nE&sz=w800" alt="Titik Balik">
+      <div class="proj-overlay">
+        <div class="proj-info">
+          <div class="proj-cat">Karya 12 TP C</div>
+          <div class="proj-title">Titik Balik</div>
+          <div class="proj-play-hint"><span class="play-icon">▶</span> Tonton Trailer</div>
+        </div>
+      </div>
+      <div class="proj-num">
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">02</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">2024</span>
+      </div>
+    </div>
+
+    <!-- Project 3 -->
+    <div class="proj" onclick="openVideo('drive','1sWKtOPDAnsEu4Kx-6KW3qG1VGK21wkPq','Karya 12 TC B','Selisih')" style="cursor:none;">
+      <img class="proj-img" src="https://drive.google.com/thumbnail?id=1xV2S8BJaR0D3qb5ra32wbKMmmOWS_xqg&sz=w800" alt="Selisih">
+      <div class="proj-overlay">
+        <div class="proj-info">
+          <div class="proj-cat">Karya 12 TC B</div>
+          <div class="proj-title">Selisih</div>
+          <div class="proj-play-hint"><span class="play-icon">▶</span> Tonton Trailer</div>
+        </div>
+      </div>
+      <div class="proj-num">
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">03</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">2024</span>
+      </div>
+    </div>
+
+    <!-- Project 4 -->
+    <div class="proj" onclick="openVideo('drive','1zXiuaRvCDL73ssTAeHL3bPqWMaEBrw_Z','Karya Anak Bangsa','Jemput Bahagia')" style="cursor:none;">
+      <img class="proj-img" src="https://drive.google.com/thumbnail?id=1zSvPx_6L7cvu0eyY2RQIuOsng1rCGcNs" alt="Jemput Bahagia">
+      <div class="proj-overlay">
+        <div class="proj-info">
+          <div class="proj-cat">Karya Anak Bangsa</div>
+          <div class="proj-title">Jemput Bahagia</div>
+          <div class="proj-play-hint"><span class="play-icon">▶</span> Tonton Trailer</div>
+        </div>
+      </div>
+      <div class="proj-num">
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">04</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">2024</span>
+      </div>
+    </div>
+
+   <!-- Project 5 -->
+    <div class="proj" onclick="openVideo('drive','1zM5SCVbsgSMd0ONsabFDWyAW6HQ-RnxG','Karya Rapi Film','Dear Nathan')" style="cursor:none;">
+      <img class="proj-img" src="https://drive.google.com/thumbnail?id=1zM5SCVbsgSMd0ONsabFDWyAW6HQ-RnxG" alt="Dear Nathan">
+      <div class="proj-overlay">
+        <div class="proj-info">
+          <div class="proj-cat">Karya Rapi Film</div>
+          <div class="proj-title">Dear Nathan</div>
+          <div class="proj-play-hint"><span class="play-icon">▶</span> Tonton Trailer</div>
+        </div>
+      </div>
+      <div class="proj-num">
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">05</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">2024</span>
+      </div>
+    </div>
+
+   <!-- Project 6 -->
+    <div class="proj" onclick="openVideo('drive','1z_2FisbJffRr2lMc3wSTl3fPtwd2JiyG','Karya Anak Bangsa','FRI3ND')" style="cursor:none;">
+      <img class="proj-img" src="https://drive.google.com/thumbnail?id=1zA71fVk5IfhfIVhfilmTk_H8buedpgzb" alt="FRI3END">
+      <div class="proj-overlay">
+        <div class="proj-info">
+          <div class="proj-cat">Karya Anak Bangsa</div>
+          <div class="proj-title">FRI3ND</div>
+          <div class="proj-play-hint"><span class="play-icon">▶</span> Tonton Trailer</div>
+        </div>
+      </div>
+      <div class="proj-num">
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">06</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);">2024</span>
+      </div>
+    </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="services-header reveal">
+    <div class="section-tag">berikut ini edukasi</div>
+    <h2 class="services-headline">
+      Edukasi<br>
+      Dalam <em>Setiap</em><br>
+      Tayangan
+    </h2>
+  </div>
+
+  <div class="services-grid reveal">
+    <div class="service-item">
+      <div class="service-num">01</div>
+      <div class="service-name">Si Guntur </div>
+      <p calss="service-desc">PEMBUATAN PROPERTI FILM : </p>
+      <p class="service-desc"> 1.bayi : bayi yang digunakan dalam film ini hanya lah bayi boneka yang realistis dan cocok untuk properti film tersebut </p>
+      <p class="service-desc"> 2.pistol : pistol yang digunakan dalam film tersebut bukanlah pistol sungguhan melainkan pistol mainan yang tidak berbahaya </p>
+      <p calss="service-desc">PENEMPATAN SOUND EFEK : </p>
+      <p class="service-desc"> musik menegangkan digunakan di bagian tertentu seperti ibu yang sedang melahirkan serta menangkapan tersangka</p>
+      <p calss="service-desc">PENYELESAIAN MASALAH : </p>
+      <p class="service-desc"> menerima dan memaafkan semua kesalahan yang dilakukan oleh pemeran ayah </p>
+      <p calss="service-desc">PESAN MORAL : </p>
+      <p class="service-desc">jangan pernah menganggap seseorang itu lemah tanpa mengenalnya lebih jauh serta percaya lah pada diri sendiri</p>
+      <div class="service-tags">
+        <span class="s-tag">Rating</span>
+      </div>
+    </div>
+
+    <div class="service-item">
+      <div class="service-num">02</div>
+      <div class="service-name">Selisih </div>
+      <p calss="service-desc">PEMBUATAN PROPERTI FILM : </p>
+      <p class="service-desc">1.luka dan memar : menggunakan riasan wajah yang aman untuk digunakan</p>
+      <p class="service-desc">2.darah : menggunakan pewarna makanan ataupun perma blood yang aman untuk digunakan</p>
+      <p class="service-desc"> 3.pisau : pisau yang digunakan tidaklah berbahaya dan hanya sebatas pisau mainan</p>
+      <p class="service-desc"> 4.pistol : pistol yang digunakan dalam film bukanlah pistol sungguhan melaikan pistol mainan yang aman dalam proses pembuatan film tersebut </p>
+      <p class="service-desc"> 5. borgol : borgol yang digunakan bukanlah borgol asli yang sering digunakan oleh pihak kepolisian melainkan hanyalah replika borgol</p>
+      <p calss="service-desc">PENEMPATAN SOUND EFEK : </p>
+      <p class="service-desc">1.sound efek yang digunakan ialah sound aksi yang digunakan di bagian perkelahian antar 2 kelompok pelajar</p>
+      <p class="service-desc"> 2.sound efek menegangkan : digunakan saat penangkapan beberapa remaja serta introgasi tersangka</p>
+      <p calss="service-desc">PENYELESAIAN MASALAH : </p>
+      <p class="service-desc">ketika kedua kelompok akhirnya menyesali perbuatan mereka karna menyebabkan teman-teman nya terluka akhirnya mereka memutuskan untuk tidak melanjutkan permasalahan tersebut dan memutuskan untuk berdamai.</p>
+      <p calss="service-desc">PESAN MORAL : </p>
+      <p class="service-desc">menyelesaikan suatu permasalahan dengan cara kekerasan mungkin memberikan solusi instan, namun sering kali menimbulkan konsekuensi negatif jangka panjang, seperti merugikan diri sendiri dan orang lain serta sulit untuk membangun kepercayaan kembali.</p>
+      <div class="service-tags">
+        <span class="s-tag">Rating</span>
+      </div>
+    </div>
+
+    <div class="service-item">
+      <div class="service-num">03</div>
+      <div class="service-name">Titik Balik </div>
+      <p calss="service-desc">PENEMPATAN SOUND EFEK : </p>
+      <p class="service-desc"> sound efek yang digunakan dalam film tersebut ialah sound menegangkan agar membuat audiens merasa penasaran terhadap film "Titik Balik" ini</p>
+      <p calss="service-desc">PENYELESAIAN MASALAH :
+      <p class="service-desc"> dalam film titik balik ini kita bisa melihat mereka dapat menyelesaikan masalah yang mereka alami dengan cara yang baik atau dengan kepala dingin dan tidak merugikan orang lain ataupun diri sendiri</p>
+      <p calss="service-desc">PESAN MORAL : </p>
+      <p class="service-desc"> pesan  moral yang dapat kita ambil dari film pendek ini ialah anak yang tadinya baik lalu terbawa pergaulan bebas, dan kembali berubah demi masa depan yang jauh lebih baik </p>
+      <div class="service-tags">
+        <span class="s-tag">Rating</span>
+      </div>
+    </div>
+      </h2>
+    </div>
+    
+    <div class="services-grid reveal">
+    <div class="service-item">
+      <div class="service-num">04</div>
+      <div class="service-name">Jemput Bahagia </div>
+      <p calss="service-desc">PEMBUATAN PROPERTI FILM : </p>
+      <p class="service-desc"> 1. darah : terbuat dari saus tomat ataupun pewarna yang sangat aman dan tidak membahayakan sang aktris/aktor </p>
+      <p class="service-desc"> 2. perban dan kain pembalut luka </p>
+      <p class="service-desc"> 3. obat botol : terkadang beberapa film menggunakan botol obat yang berisi air ataupun sirup yang aman untuk di minum</p>
+      <p class="service-desc"> 4. tisu yang digunakan untuk mengelap darah mimisan di awal film</p>
+      <p class="service-desc"> 5. hadiah kecil : hadaih kecil ini diberikan oleh tokoh ayah untuk anak perempuannya sebagai bentuk kasih sayang sang ayah terhadap sang anak.</p>
+      <p calss="service-desc">PENEMPATAN SOUND EFEK : </p>
+      <p class="service-desc"> 1. latar suara film : bel sekolah dan suara kendaraan sekitar</p>
+      <p class="service-desc"> 2. efek suara dramatis : alarm hp,suara langkah kaki dan ketukan pintu</p>
+      <p class="service-desc"> 3. efek suara pendukung : silent effect,musik sedih dan musik lembut di beberapa potongan film</p>
+      <p calss="service-desc">PENYELESAIAN MASALAH : </p>
+      <p class="service-desc"> dalam film ini kita dapat melihat beberapa penyelesaian masalah secara tidak tertulis seperti adanya dukungan keluarga yang sangat berpengaruh terhadap seorang anak</p>
+      <p class="service-desc">,kebahagiaan yang bisa datang dari rasa syukur seseorang dan perubahan pola pikir dapat menjadikan solusi dari masalah itu sendiri </p>
+      <p calss="service-desc">PESAN MORAL : </p>
+      <p class="service-desc">bahwa kebahagiaan sejati tidak terletak pada materi atau kesempurnaan hidup, melainkan pada kemampuan kita untuk menghargai cinta keluarga,</p>
+      <p class="service-desc">bersyukur atas hal-hal kecil, serta tetap kuat menghadapi ujian hidup. Film ini mengingatkan penonton untuk tidak mudah menyerah dan selalu melihat sisi baik dari setiap keadaan.</p>
+      <div class="service-tags">
+        <span class="s-tag">Rating</span>
+      </div>
+    </div>
+
+     <div class="service-item">
+      <div class="service-num">05</div>
+      <div class="service-name">Dear Nathan</div>
+      <p calss="service-desc">PEMBUATAN PROPERTI FILM :</p>
+      <p class="service-desc">1.surat catatan kecil yang diberikan oleh nathan untuk sang kekasih salma.</p>
+      <p class="service-desc">2.coklat,hadiah kecil dan bunga sebagai simbol hubungan kedua nya.</p>
+      <p calss="service-desc">PENEMPATAN SOUND EFEK : </p>
+      <p class="service-desc">background musik : 1.sound efek romantis lembut.</p>
+      <p class="service-desc">2.sound efek sedih atau dramatis di beberapa adegan dalam film.</p>
+      <p class="service-desc">3.musik ceria.</p>
+      <p calss="service-desc">PENYELESAIAN MASALAH :
+      <p class="service-desc">1.Konflik dalam hubungan remaja wajar, tetapi bisa diatasi dengan komunikasi.</p>
+      <p class="service-desc">2.Kesalahan dan perbedaan bukan penghalang jika ada pengertian dan kompromi.</p>
+      <p class="service-desc">3.Dukungan orang terdekat sangat membantu proses rekonsiliasi dan membangun kembali kepercayaan.</p>
+      <p calss="service-desc">PESAN MORAL : </p>
+      <p class="service-desc">bahwa hubungan yang sehat dibangun melalui komunikasi, pengertian, toleransi, dan rasa hormat terhadap perbedaan. Konflik bisa diselesaikan jika ada kesediaan untuk mendengar, bersabar, dan belajar dari pengalaman. Film ini juga mengingatkan penonton, </p>
+      <p class="service-desc">khususnya remaja, bahwa cinta sejati bukan hanya soal perasaan, tetapi juga soal kedewasaan dalam menghadapi masalah. </p>
+      <div class="service-tags">
+        <span class="s-tag">Rating</span>
+      </div>
+    </div>
+
+     <div class="service-item">
+      <div class="service-num">06</div>
+      <div class="service-name">Fri3nd</div>
+      <p calss="service-desc">PEMBUATAN PROPERTI FILM :</p>
+      <p class="service-desc">1. Kaleng Makanan: Menunjukkan ketergantungan karakter pada stok makanan instan.</p>
+      <p class="service-desc">2. Lampu Meja/PeneranganTemaram: Pencahayaan adalah properti kunci. Penggunaan lampu yang redup atau berwarna hangat menciptakan suasana klaustrofobia dan kesepian.</p>
+      <p class="service-desc">3. Headphone Besar: Digunakan karakter utama untuk berinteraksi dengan dunia digital atau mendengarkan rekaman, memisahkan dirinya dari kesunyian bunker fisik.</p>
+      <p calss="service-desc">PENGGUNAAN SOUND EFEK PADA FILM :</p>
+      <p class="service-desc">Diegetic Sound: 1. Suara dengungan lampu neon (fluorescent hum) yang konstan menciptakan rasa tidak nyaman (liminal space).</p>
+      <p class="service-desc">2. Non-Diegetic Sound: Penggunaan musik latar yang minimalis namun mencekam.seperti suara monster ("The Entity") yang tidak alami dan suara mekanis yang bercampur dengan jeritan.</p>
+      <p calss="service-desc">PENYELESAIAN MASALAH :</p>
+      <p class="service-desc">1. Kesepian dan Isolasi, Penyelesaian: Ia menciptakan atau berinteraksi dengan sebuah AI (kecerdasan buatan) yang ia anggap sebagai "teman". Ini adalah mekanisme pertahanan diri untuk tetap waras.</p>
+      <p class="service-desc">2. Konflik Kepercayaan (Trust Issue), Karakter utama memilih untuk percaya dan memberikan sisi kemanusiaannya kepada mesin tersebut, yang kemudian menciptakan ikatan emosional yang melampaui kode pemrograman.</p>
+      <p class="service-desc">3. Penerimaan (Acceptance), Penyelesaian: Karakter utama menyelesaikan rasa takutnya dengan menerima takdirnya. Ia tidak lagi melihat bunker itu sebagai penjara, tetapi sebagai ruang di mana ia berhasil menjalin satu persahabatan terakhir.</p>
+      <p calss="service-desc">PESAN MORAL :</p>
+      <p class="service-desc">Bahwa hubungan antar mahluk (koneksi) adalah kebutuhan dasar yang lebih penting daripada sekadar bertahan hidup secara fisik.</p>
+      <div class="service-tags">
+        <span class="s-tag">Rating</span>
+      </div>
+    </div>
+    </h2>
+  </div>
+</section>
+
+<!-- ── TESTIMONIAL ── -->
+<div class="testimonial-section">
+  <div class="reveal">
+    <blockquote class="testimonial-quote">
+      "Sudut Layar tidak hanya mendesain — mereka mendengarkan, memahami, 
+      dan menghasilkan karya yang jauh melampaui ekspektasi kami."
+    </blockquote>
+    <div class="testimonial-attr">
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="reveal">
+    <h2 class="contact-headline">
+      Mari kita<br><em>bercerita</em>
+    </h2>
+    <p class="contact-sub">
+      Punya proyek film yang ingin diwujudkan? Kami selalu terbuka untuk kolaborasi yang bermakna.
+    </p>
+    <div class="contact-links">
+      <a href="mailto:thecinemaedu@gmail.com" class="contact-email">thecinemaedu@gmail.com</a>
+    </div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-copy">© 2025 Sudut Layar. Dibuat dengan penuh niat.</div>
+  <ul class="footer-links">
+    <li><a href="#" onclick="openLogin()">Masuk</a></li>
+    <li><a href="mailto:thecinemaedu@gmail.com?subject=komplain%20pengguna&body=Halo%20admin%20sudut%20layar,%20saya%20ingin%20menyampaikan..." style="color: var(--copper); text-decoration: none;" >Komplain</a></li>
+  </ul>
+</footer>
+
+<!-- ── LOGIN MODAL ── -->
+<div class="modal-overlay" id="loginModal" onclick="handleOverlayClick(event)">
+  <div class="login-modal" id="loginModalBox">
+    <button class="modal-close" onclick="closeLogin()">✕</button>
+
+    <div id="loginForm">
+      <div class="modal-logo">
+        <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
+          <rect x="2" y="2" width="40" height="40" stroke="#090f1a" stroke-width="1"/>
+          <line x1="2" y1="2" x2="9" y2="2" stroke="#2d6fbb" stroke-width="1.5"/>
+          <line x1="2" y1="2" x2="2" y2="9" stroke="#2d6fbb" stroke-width="1.5"/>
+          <line x1="42" y1="35" x2="42" y2="42" stroke="#2d6fbb" stroke-width="1.5"/>
+          <line x1="35" y1="42" x2="42" y2="42" stroke="#2d6fbb" stroke-width="1.5"/>
+          <path d="M10 16 Q10 11 15 11 L22 11 Q27 11 27 16 Q27 21 22 22 L17 22 Q10 23 10 28 Q10 33 17 33 L28 33" stroke="#090f1a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          <path d="M30 11 L30 33 L38 33" stroke="#2d6fbb" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="modal-logo-text">SUDUT LAYAR</span>
+      </div>
+
+      <h2 class="modal-headline">HALO<br>SOBAT SUDUTLAYAR</h2>
+      <p class="modal-sub">Satu langkah lagi untuk masuk ke studio digitalmu. Semua aset proyek sudah menunggu di dalam!.</p>
+
+      <div id="loginError" style="display:none;background:#eff5ff;border-left:3px solid #2d6fbb;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:#1a3f72;font-weight:300;"></div>
+
+      <div class="form-field">
+        <label class="form-label">Alamat Email</label>
+        <input class="form-input" type="email" id="emailInput" placeholder="nama@email.com" autocomplete="email">
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Kata Sandi</label>
+        <input class="form-input" type="password" id="passInput" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <div class="form-options">
+        <label class="check-wrap">
+          <input type="checkbox" id="rememberMe"> Ingat saya
+        </label>
+        <a href="#" class="forgot-link">Lupa kata sandi?</a>
+      </div>
+
+      <button class="btn-submit" onclick="handleLogin()">Masuk segera</button>
+
+      <div class="modal-divider"><span>atau</span></div>
+
+      <p class="register-link">
+        Belum punya akun? <a href="#">Daftar sebagai klien</a>
+      </p>
+    </div>
+
+    <!-- Success state -->
+    <div class="login-success" id="loginSuccess">
+      <div class="success-icon">✦</div>
+      <div class="success-name" id="successName">Selamat Datang!</div>
+      <p class="success-msg">
+        Anda berhasil masuk ke portal Sudut Layar.<br>
+        Silakan eksplorasi proyek Anda.
+      </p>
+      <br>
+      <button class="btn-submit" style="margin-top:1.5rem" onclick="closeLogin()">Lanjutkan →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── VIDEO MODAL ── -->
+<div class="video-modal-overlay" id="videoModal" onclick="handleVideoOverlayClick(event)">
+  <div class="video-modal-inner" id="videoModalInner">
+    <div class="video-modal-header">
+      <div>
+        <div class="video-modal-cat" id="videoModalCat"></div>
+        <div class="video-modal-title" id="videoModalTitle"></div>
+      </div>
+      <button class="video-modal-close" onclick="closeVideo()">✕</button>
+    </div>
+    <div class="video-frame-wrap">
+      <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCRIPTS ── -->
+<script>
+// === VIDEO MODAL ===
+function openVideo(type, id, cat, title) {
+  const modal = document.getElementById('videoModal');
+  const frame = document.getElementById('videoFrame');
+  document.getElementById('videoModalCat').textContent = cat;
+  document.getElementById('videoModalTitle').textContent = title;
+
+  let src = '';
+  if (type === 'drive') {
+    // Google Drive embed - /preview works without login requirement
+    src = `https://drive.google.com/file/d/${id}/preview`;
+  } else if (type === 'youtube') {
+    src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+  }
+
+  frame.src = src;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVideo() {
+  const modal = document.getElementById('videoModal');
+  document.getElementById('videoFrame').src = '';
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleVideoOverlayClick(e) {
+  if (e.target === document.getElementById('videoModal')) closeVideo();
+}
+
+// Close video on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('videoModal').classList.contains('open')) {
+      closeVideo();
+      return;
+    }
+    closeLogin();
+  }
+});
+
+// === CURSOR ===
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+function animCursor() {
+  cur.style.left = mx + 'px';
+  cur.style.top  = my + 'px';
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+// === SCROLL REVEAL ===
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => observer.observe(el));
+
+// === LOGIN ===
+// Demo credentials
+const DEMO_USERS = [
+  { email: 'klien@sudutlayar.id',  pass: 'studio2025', name: 'Portal Klien' },
+  { email: 'admin@sudutlayar.id',  pass: 'admin123',   name: 'Admin Studio' },
+  { email: 'demo@demo.com',        pass: 'demo',        name: 'Demo User' },
+];
+
+let loggedInUser = null;
+
+function openLogin() {
+  document.getElementById('loginModal').classList.add('open');
+  setTimeout(() => document.getElementById('emailInput').focus(), 400);
+}
+
+function closeLogin() {
+  document.getElementById('loginModal').classList.remove('open');
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('loginModal')) closeLogin();
+}
+
+function handleLogin() {
+  const email = document.getElementById('emailInput').value.trim();
+  const pass  = document.getElementById('passInput').value;
+  const errEl = document.getElementById('loginError');
+
+  if (!email || !pass) {
+    showError('Mohon isi email dan kata sandi.');
+    return;
+  }
+
+  const user = DEMO_USERS.find(u => u.email === email && u.pass === pass);
+
+  if (!user) {
+    showError('Email atau kata sandi tidak sesuai. Coba: demo@demo.com / demo');
+    shake();
+    return;
+  }
+
+  // Success!
+  loggedInUser = user;
+  errEl.style.display = 'none';
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('successName').textContent = 'Halo, ' + user.name + '!';
+  document.getElementById('loginSuccess').style.display = 'block';
+
+  // Update nav
+  const indicator = document.getElementById('userIndicator');
+  indicator.style.display = 'flex';
+  document.getElementById('userName').textContent = user.name.toUpperCase();
+  document.getElementById('loginBtn').textContent = 'Keluar';
+  document.getElementById('loginBtn').onclick = handleLogout;
+}
+
+function handleLogout() {
+  loggedInUser = null;
+  document.getElementById('userIndicator').style.display = 'none';
+  document.getElementById('loginBtn').textContent = 'Masuk';
+  document.getElementById('loginBtn').onclick = openLogin;
+  // Reset modal form
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('loginSuccess').style.display = 'none';
+  document.getElementById('emailInput').value = '';
+  document.getElementById('passInput').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function showError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function shake() {
+  const box = document.getElementById('loginModalBox');
+  box.style.animation = 'none';
+  box.style.transform = 'translateX(0)';
+  let start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    const p = (ts - start) / 400;
+    if (p < 1) {
+      box.style.transform = `translateX(${Math.sin(p * Math.PI * 6) * 8}px)`;
+      requestAnimationFrame(step);
+    } else {
+      box.style.transform = 'translateX(0)';
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// Enter key support for login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginModal').classList.contains('open')) {
+    handleLogin();
+  }
+});
+
+// Smooth nav
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
 
