@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tentang Kami - Sudut Layar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+/* Mengambil variabel warna dan dasar dari index.html */
+:root {
+  --ink: #090f1a;
+  --paper: #f0f4fa;
+  --cream: #e4ecf7;
+  --warm: #93b4d8;
+  --copper: #2d6fbb;
+  --rust: #1a3f72;
+  --charcoal: #1a2a42;
+  --text: #0f1e33;
+  --muted: #5a718a;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: 'Cormorant Garamond', serif;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* ── NOISE & CURSOR (Konsistensi dengan Index) ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.5;
+}
+
+.cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--copper);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s;
+  mix-blend-mode: multiply;
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--copper);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.18s ease;
+  opacity: 0.6;
+}
+
+/* ── NAV ── */
+nav {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 1.5rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.logo-main {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 3px;
+  color: var(--ink);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  text-decoration: none;
+}
+
+/* ── ABOUT CONTENT ── */
+.about-hero {
+  padding: 12rem 3rem 6rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-tag::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--copper);
+}
+
+.huge-title {
+  font-size: clamp(3.5rem, 8vw, 8rem);
+  line-height: 0.9;
+  font-weight: 300;
+  letter-spacing: -2px;
+  margin-bottom: 4rem;
+}
+
+.huge-title em {
+  font-style: italic;
+  color: var(--copper);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  margin-bottom: 8rem;
+}
+
+.about-text-large {
+  font-size: 1.8rem;
+  line-height: 1.4;
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.about-details {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.team-section {
+  background: var(--cream);
+  padding: 7rem 3rem;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.team-card {
+  background: var(--paper);
+  padding: 2rem;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.team-card:hover {
+  border-bottom-color: var(--copper);
+  transform: translateY(-10px);
+}
+
+.team-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 0.5rem;
+}
+
+.team-name {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+footer {
+  padding: 4rem 3rem;
+  background: var(--ink);
+  color: var(--warm);
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+}
+
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .huge-title { font-size: 4rem; }
+  nav { padding: 1.5rem; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-wordmark">
+      <span class="logo-main">SUDUT LAYAR</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Beranda</a></li>
+    <li><a href="index.html#work">Trailer</a></li>
+    <li><a href="index.html#contact">Kontak</a></li>
+  </ul>
+</nav>
+
+<section class="about-hero">
+  <div class="section-tag">Tentang Sudut Layar</div>
+  <h1 class="huge-title">Misi kami adalah<br>membuat <em>cerita</em><br>yang abadi.</h1>
+
+  <div class="about-grid">
+    <div class="about-text-large">
+      Berawal dari proyek P5 SMKN 1 Cikarang Selatan, kami percaya bahwa setiap frame memiliki kekuatan untuk mengedukasi.
+    </div>
+    <div class="about-details">
+      <p>The Cinema Edu (Sudut Layar) lahir dari semangat siswa-siswi kreatif untuk menghadirkan medium pembelajaran yang berbeda. Kami tidak hanya membuat film, kami merancang pengalaman emosional yang meninggalkan pesan moral mendalam bagi penontonnya.</p>
+      <br>
+      <p>Melalui kurasi trailer dan bedah edukasi, kami membantu audiens memahami teknis di balik layar sekaligus nilai-nilai kehidupan yang tersirat dalam setiap karya sinematik kami.</p>
+    </div>
+  </div>
+</section>
+
+<section class="team-section">
+  <div class="section-tag">Tim Kreatif <span>/ Angkatan 2025</span></div>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-role">Production</div>
+      <div class="team-name">Sutradara & Script</div>
+      <p style="font-size: 0.9rem; color: var(--muted);">Mengatur visi kreatif dan alur cerita dalam setiap produksi film pendek.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-role">Technical</div>
+      <div class="team-name">Editor & Sound</div>
+      <p style="font-size: 0.9rem; color: var(--muted);">Mengolah visual dan efek suara untuk menciptakan atmosfer yang nyata.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-role">Artistic</div>
+      <div class="team-name">Visual Design</div>
+      <p style="font-size: 0.9rem; color: var(--muted);">Bertanggung jawab atas estetika, properti, dan tampilan antarmuka platform.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2025 SUDUT LAYAR · CREATIVE EDUCATION STUDIO
+</footer>
+
+<script>
+// Sinkronisasi Cursor dari index.html
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+function animCursor() {
+  cur.style.left = mx + 'px';
+  cur.style.top  = my + 'px';
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+</script>
+
+</body>
+</html>
